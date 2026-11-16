@@ -1,0 +1,23 @@
+[
+  {
+    "id": "lady-glam",
+    "name": "Lady – Glam Gown",
+    "subtitle": "Luxury ballroom, sequinned evening gown",
+    "maxPeople": 4,
+    "prompt": "Transform this photo into a luxury editorial portrait. Place the person(s) in an elegant art-deco ballroom with crystal chandeliers, gold detailing and soft warm lighting. Dress each woman in a glamorous floor-length sequinned evening gown in champagne gold. Full-body or three-quarter framing, fashion magazine quality, sharp focus, photorealistic."
+  },
+  {
+    "id": "baju-melayu-raya",
+    "name": "Baju Melayu Raya",
+    "subtitle": "Festive Hari Raya portrait, traditional attire",
+    "maxPeople": 4,
+    "prompt": "Transform this photo into a festive Hari Raya portrait. Dress the men in a well-fitted Baju Melayu with samping and songkok, and the women in an elegant Baju Kurung with matching colours in emerald green and gold. Background: a decorated traditional Malay kampung house veranda with pelita lights and ketupat decorations, warm golden-hour light. Photorealistic, family portrait style."
+  },
+  {
+    "id": "corporate-headshot",
+    "name": "Corporate Headshot",
+    "subtitle": "Clean studio portrait for LinkedIn",
+    "maxPeople": 2,
+    "prompt": "Transform this photo into a professional corporate studio portrait. Dress each person in smart business attire (dark blazer, neat shirt or blouse). Plain soft grey studio backdrop, professional three-point lighting, shallow depth of field, head-and-shoulders framing, photorealistic, high-end corporate photography."
+  }
+]

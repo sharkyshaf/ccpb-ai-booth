@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#E7E6E7">
+<link rel="manifest" href="/manifest.json">
+<title>Cetak Cetak AI Booth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,500;0,600;1,500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E7E6E7; --card:#F6F5F6; --ink:#1d1b1c; --muted:#6d6a6c; --line:#d3d1d3;
+    --accent:#1d1b1c; --gold:#b08d57;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;overflow:hidden}
+  .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:5vh 6vw;text-align:center}
+  .screen.active{display:flex}
+  h1,h2{font-family:"Crimson Pro",serif;font-weight:600;margin:0}
+  h1{font-size:9vw;line-height:1.05}
+  h2{font-size:6vw;margin-bottom:3vh}
+  .eyebrow{letter-spacing:.35em;text-transform:uppercase;font-size:2vw;color:var(--muted);margin-bottom:2vh}
+  .tagline{font-family:"Crimson Pro",serif;font-style:italic;font-size:3.6vw;color:var(--muted);margin-top:2vh}
+  .btn{border:0;border-radius:999px;background:var(--accent);color:#fff;font-family:inherit;font-weight:700;font-size:3.6vw;padding:2.6vh 9vw;margin-top:5vh;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+  .btn:active{transform:scale(.97)}
+  .row{display:flex;gap:3vw;justify-content:center;flex-wrap:wrap}
+  .themes{display:flex;flex-direction:column;gap:2.2vh;width:100%;max-width:88vw}
+  .theme{background:var(--card);border:2px solid var(--line);border-radius:28px;padding:3.2vh 5vw;text-align:left;cursor:pointer}
+  .theme b{display:block;font-family:"Crimson Pro",serif;font-size:5vw;font-weight:600}
+  .theme span{color:var(--muted);font-size:2.8vw}
+  .theme:active,.pill:active{border-color:var(--gold)}
+  .pill{background:var(--card);border:2px solid var(--line);border-radius:28px;width:17vw;height:17vw;font-family:"Crimson Pro",serif;font-size:8vw;font-weight:600;cursor:pointer;color:var(--ink)}
+  .pill small{display:block;font-family:"DM Sans";font-size:2.2vw;color:var(--muted);font-weight:500}
+  #camWrap{position:relative;width:84vw;aspect-ratio:2/3;max-height:72vh;border-radius:28px;overflow:hidden;background:#cfcdcf}
+  #cam{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+  #count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Crimson Pro",serif;font-size:40vw;color:#fff;text-shadow:0 6px 30px rgba(0,0,0,.35)}
+  #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .4s}
+  .hint{color:var(--muted);font-size:3vw;margin-top:2vh}
+  .spinner{width:16vw;height:16vw;border:1.2vw solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin 1.1s linear infinite;margin-bottom:5vh}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loadMsg{font-family:"Crimson Pro",serif;font-size:5.5vw}
+  #result{width:70vw;aspect-ratio:2/3;max-height:58vh;object-fit:cover;border-radius:24px;box-shadow:0 14px 40px rgba(0,0,0,.18);background:#fff}
+  .qrbox{display:flex;align-items:center;gap:4vw;margin-top:3vh;background:var(--card);border-radius:24px;padding:2vh 4vw}
+  .qrbox img{width:19vw;height:19vw}
+  .qrbox p{text-align:left;font-size:3vw;margin:0;max-width:40vw}
+  #demo{position:fixed;top:0;left:0;right:0;background:#b08d57;color:#fff;font-size:2.2vw;padding:.8vh;text-align:center;display:none;z-index:5}
+  #fs{position:fixed;bottom:1.5vh;right:2vw;opacity:.25;background:none;border:0;font-size:4vw;z-index:5}
+  .back{position:fixed;top:3vh;left:4vw;background:none;border:0;font-size:3.2vw;color:var(--muted);font-family:inherit}
+  .err{color:#a1342d;font-size:3.4vw;max-width:80vw}
+</style>
+</head>
+<body>
+<div id="demo">DEMO MODE – no AI key set. Photos are only tinted, not AI-generated.</div>
+
+<!-- 1. Start -->
+<section class="screen active" id="s-start">
+  <div class="eyebrow">Cetak Cetak Photobooth</div>
+  <h1>AI Portrait<br>Studio</h1>
+  <div class="tagline">Ingat photobooth, ingat Cetak Cetak</div>
+  <button class="btn" onclick="go('s-theme')">Tap to start</button>
+</section>
+
+<!-- 2. Theme -->
+<section class="screen" id="s-theme">
+  <button class="back" onclick="go('s-start')">‹ Back</button>
+  <h2>Choose your look</h2>
+  <div class="themes" id="themeList"></div>
+</section>
+
+<!-- 3. People -->
+<section class="screen" id="s-people">
+  <button class="back" onclick="go('s-theme')">‹ Back</button>
+  <h2>How many people?</h2>
+  <div class="row" id="peopleRow"></div>
+</section>
+
+<!-- 4. Camera -->
+<section class="screen" id="s-camera">
+  <button class="back" onclick="stopCam();go('s-people')">‹ Back</button>
+  <div id="camWrap"><video id="cam" autoplay playsinline muted></video><div id="count"></div><div id="flash"></div></div>
+  <div class="hint" id="camHint">Stand inside the frame</div>
+  <button class="btn" id="shootBtn" onclick="countdown()">Take photo</button>
+</section>
+
+<!-- 5. Loading -->
+<section class="screen" id="s-loading">
+  <div class="spinner"></div>
+  <div id="loadMsg">Creating your portrait…</div>
+  <div class="hint" id="loadTime">0s</div>
+</section>
+
+<!-- 6. Result -->
+<section class="screen" id="s-result">
+  <img id="result" alt="Your AI portrait">
+  <div class="qrbox"><img id="qr" alt="QR code"><p><b>Scan to download</b><br>Point your phone camera at the code</p></div>
+  <div class="row">
+    <button class="btn ghost" onclick="retake()">Retake</button>
+    <button class="btn" onclick="finish()">Done</button>
+  </div>
+</section>
+
+<!-- 7. Error -->
+<section class="screen" id="s-error">
+  <h2>Oops</h2>
+  <div class="err" id="errMsg"></div>
+  <div class="row">
+    <button class="btn ghost" onclick="finish()">Start over</button>
+    <button class="btn" onclick="retake()">Try again</button>
+  </div>
+</section>
+
+<button id="fs" onclick="toggleFS()" title="Fullscreen">⛶</button>
+
+<script>
+const state = { themes: [], theme: null, people: 1, stream: null, lastPhoto: null };
+let idleTimer = null, loadTimer = null;
+
+async function init(){
+  try{
+    const r = await fetch('/api/themes'); const d = await r.json();
+    state.themes = d.themes;
+    if (d.demoMode) document.getElementById('demo').style.display = 'block';
+    document.getElementById('themeList').innerHTML = d.themes.map(t =>
+      `<div class="theme" onclick="pickTheme('${t.id}')"><b>${t.name}</b><span>${t.subtitle||''}</span></div>`).join('');
+  }catch(e){ showError('Cannot reach the booth server. Check the internet connection.'); }
+  keepAwake();
+}
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  resetIdle(id);
+}
+
+function pickTheme(id){
+  state.theme = state.themes.find(t => t.id === id);
+  const max = state.theme.maxPeople || 4;
+  document.getElementById('peopleRow').innerHTML = Array.from({length:max},(_,i)=>i+1)
+    .map(n => `<button class="pill" onclick="pickPeople(${n})">${n}<small>${n===1?'person':'people'}</small></button>`).join('');
+  go('s-people');
+}
+
+async function pickPeople(n){ state.people = n; await startCam(); }
+
+async function startCam(){
+  go('s-camera');
+  document.getElementById('shootBtn').disabled = false;
+  if (state.stream) return;
+  try{
+    state.stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:'user', width:{ideal:1920}, height:{ideal:1080} }, audio:false });
+    document.getElementById('cam').srcObject = state.stream;
+  }catch(e){ showError('Camera not available. Allow camera permission in Chrome and reload.'); }
+}
+function stopCam(){ if(state.stream){ state.stream.getTracks().forEach(t=>t.stop()); state.stream=null; } }
+
+function countdown(){
+  const btn = document.getElementById('shootBtn'); btn.disabled = true;
+  const el = document.getElementById('count'); let n = 3; el.textContent = n;
+  const t = setInterval(() => {
+    n--; if (n > 0) { el.textContent = n; return; }
+    clearInterval(t); el.textContent = ''; capture();
+  }, 1000);
+}
+
+function capture(){
+  const v = document.getElementById('cam');
+  const flash = document.getElementById('flash'); flash.style.opacity = 1; setTimeout(()=>flash.style.opacity=0, 150);
+  // crop the centre of the camera image to portrait 2:3, max 1024px tall
+  const vw = v.videoWidth, vh = v.videoHeight; if(!vw){ return showError('Camera is not ready yet.'); }
+  let cw = vh * 2/3, ch = vh; if (cw > vw){ cw = vw; ch = vw * 3/2; }
+  const sx = (vw - cw)/2, sy = (vh - ch)/2;
+  const outH = Math.min(1024, ch), outW = Math.round(outH * 2/3);
+  const c = document.createElement('canvas'); c.width = outW; c.height = outH;
+  const ctx = c.getContext('2d'); ctx.translate(outW,0); ctx.scale(-1,1); // keep mirror, same as preview
+  ctx.drawImage(v, sx, sy, cw, ch, 0, 0, outW, outH);
+  state.lastPhoto = c.toDataURL('image/jpeg', 0.9);
+  generate();
+}
+
+const loadingLines = ['Creating your portrait…','Choosing the perfect outfit…','Setting up the lights…','Adding the final touches…','Almost there…'];
+async function generate(){
+  stopCam(); go('s-loading');
+  const start = Date.now(); let i = 0;
+  const msg = document.getElementById('loadMsg'), tm = document.getElementById('loadTime');
+  msg.textContent = loadingLines[0];
+  clearInterval(loadTimer);
+  loadTimer = setInterval(() => {
+    const s = Math.round((Date.now()-start)/1000); tm.textContent = s + 's';
+    if (s % 8 === 0) msg.textContent = loadingLines[Math.min(++i, loadingLines.length-1)];
+  }, 1000);
+  try{
+    const r = await fetch('/api/generate', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ image: state.lastPhoto, themeId: state.theme.id, people: state.people }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Something went wrong.');
+    document.getElementById('result').src = d.imageUrl;
+    document.getElementById('qr').src = d.qr;
+    go('s-result');
+  }catch(e){ showError(e.message); }
+  finally{ clearInterval(loadTimer); }
+}
+
+function retake(){ startCam(); }
+function finish(){ stopCam(); state.theme = null; go('s-start'); }
+function showError(m){ stopCam(); document.getElementById('errMsg').textContent = m; go('s-error'); }
+
+// Return to start screen if nobody touches the booth for a while
+function resetIdle(screen){
+  clearTimeout(idleTimer);
+  if (screen === 's-start' || screen === 's-loading') return;
+  idleTimer = setTimeout(finish, screen === 's-result' ? 120000 : 60000);
+}
+document.addEventListener('pointerdown', () => {
+  const active = document.querySelector('.screen.active'); if (active) resetIdle(active.id);
+});
+
+function toggleFS(){
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.();
+}
+async function keepAwake(){ try{ await navigator.wakeLock?.request('screen'); }catch(e){} }
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') keepAwake(); });
+
+init();
+</script>
+</body>
+</html>

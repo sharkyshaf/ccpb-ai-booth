@@ -1,0 +1,9 @@
+{
+  "name": "Cetak Cetak AI Booth",
+  "short_name": "CCPB AI Booth",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#E7E6E7",
+  "theme_color": "#E7E6E7"
+}
