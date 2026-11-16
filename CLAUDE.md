@@ -21,11 +21,11 @@
 
 ## Deployment (done 16 Nov 2026)
 - GitHub: https://github.com/sharkyshaf/ccpb-ai-booth (private, branch `main`). Railway auto-deploys on push (Railway GitHub app was given repo access).
-- Live: https://ccpb-ai-booth-production.up.railway.app – volume at /data, `DATA_DIR=/data`, `PUBLIC_URL` set. Photos survive restarts. Still demo mode.
+- Live: https://ccpb-ai-booth-production.up.railway.app – volume at /data, `DATA_DIR=/data`, `PUBLIC_URL` set. Photos survive restarts. AI is ON (OpenRouter key set in Railway).
 - Gotcha: Railway holds variable changes until you click Deploy / Apply changes.
 
 ## Next steps
 1. (done) Deploy to Railway.
-2. Add OpenRouter key, run first real generation, fix any response-format issue.
+2. (done) First real AI photo worked: gpt-5.4-image-2, Glam Gown, 74s. Response format OK. Errors now return a `detail` field; `/api/health` has a `version` number to check deploys for free (never poll /api/generate – it costs money).
 3. Prompt tuning on staff photos: face likeness, hijab accuracy, groups of 1–4, time per photo (<60s), cost per photo.
 4. Then: printing to dye-sub printer (hardest – Android browser), admin page for themes, per-event white-label branding/frame, PDPA consent screen, event gallery.
