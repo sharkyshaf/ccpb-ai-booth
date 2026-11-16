@@ -38,7 +38,7 @@ const BASE_RULES = `
 STRICT RULES:
 - Keep every person's face, skin tone, facial features, age and expression exactly as in the original photo. They must be clearly recognisable as the same people.
 - If a person wears a hijab or any head covering, keep it fully on, covering the hair and neck, in the same wrapping style. Never remove it and never show hair. Restyle the hijab's colour and fabric so it matches the new outfit and theme (for example the same or a complementary shade, in a fabric that suits the outfit), like a stylist would. Keep all clothing for that person modest (long sleeves, loose, nothing tight or revealing).
-- Keep exactly the same number of people. Do not add or remove anyone.
+- Keep exactly the same number of people. Do not add or remove anyone, and do not put any other people (staff, guests, passers-by) in the background.
 - No text, logos, watermarks or signatures in the image.
 - Output a single photorealistic image in portrait orientation.`;
 
@@ -53,7 +53,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(PHOTO_DIR, { maxAge: "7d" }));
 
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, version: 6, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
+  res.json({ ok: true, version: 7, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
 });
 
 app.get("/api/themes", (req, res) => {
