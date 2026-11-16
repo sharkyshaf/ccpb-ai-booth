@@ -17,6 +17,14 @@ const PORT = process.env.PORT || 3000;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || ""; // empty = DEMO MODE
 const OPENROUTER_BASE_URL = (process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1").replace(/\/$/, "");
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-5.4-image-2";
+// Models a request may pick for side-by-side testing (booth screen always uses the default).
+const ALLOWED_MODELS = [
+  "openai/gpt-5.4-image-2",
+  "openai/gpt-5-image-mini",
+  "google/gemini-3.1-flash-image",
+  "google/gemini-3-pro-image",
+  "google/gemini-2.5-flash-image",
+];
 const PUBLIC_URL = (process.env.PUBLIC_URL || "").replace(/\/$/, ""); // e.g. https://ccpb-booth.up.railway.app
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "data");
 const PHOTO_DIR = path.join(DATA_DIR, "photos");
@@ -29,7 +37,7 @@ fs.mkdirSync(PHOTO_DIR, { recursive: true });
 const BASE_RULES = `
 STRICT RULES:
 - Keep every person's face, skin tone, facial features, age and expression exactly as in the original photo. They must be clearly recognisable as the same people.
-- If a person wears a hijab or any head covering, keep it fully on, covering the hair and neck exactly as worn. Never remove it, never show hair, and keep all clothing for that person modest (long sleeves, loose, nothing tight or revealing).
+- If a person wears a hijab or any head covering, keep it fully on, covering the hair and neck, in the same wrapping style. Never remove it and never show hair. Restyle the hijab's colour and fabric so it matches the new outfit and theme (for example the same or a complementary shade, in a fabric that suits the outfit), like a stylist would. Keep all clothing for that person modest (long sleeves, loose, nothing tight or revealing).
 - Keep exactly the same number of people. Do not add or remove anyone.
 - No text, logos, watermarks or signatures in the image.
 - Output a single photorealistic image in portrait orientation.`;
@@ -45,7 +53,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(PHOTO_DIR, { maxAge: "7d" }));
 
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, version: 5, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
+  res.json({ ok: true, version: 6, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
 });
 
 app.get("/api/themes", (req, res) => {
@@ -56,7 +64,8 @@ app.get("/api/themes", (req, res) => {
 app.post("/api/generate", async (req, res) => {
   const started = Date.now();
   try {
-    const { image, themeId, people } = req.body || {};
+    const { image, themeId, people, model } = req.body || {};
+    const useModel = ALLOWED_MODELS.includes(model) ? model : OPENROUTER_MODEL;
     if (!image || !image.startsWith("data:image/")) {
       return res.status(400).json({ error: "No photo received." });
     }
@@ -70,7 +79,7 @@ app.post("/api/generate", async (req, res) => {
     if (DEMO_MODE) {
       resultBuffer = await demoTransform(image);
     } else {
-      resultBuffer = await callOpenRouter(image, prompt);
+      resultBuffer = await callOpenRouter(image, prompt, useModel);
     }
 
     const finalBuffer = await applyFrame(resultBuffer);
@@ -81,8 +90,8 @@ app.post("/api/generate", async (req, res) => {
     const shareUrl = `${base}/p/${id}`;
     const qr = await QRCode.toDataURL(shareUrl, { margin: 1, width: 400 });
 
-    console.log(`[generate] theme=${theme.id} people=${peopleCount} id=${id} ${((Date.now() - started) / 1000).toFixed(1)}s`);
-    res.json({ id, imageUrl: `/photos/${id}.jpg`, shareUrl, qr, seconds: Math.round((Date.now() - started) / 1000) });
+    console.log(`[generate] model=${DEMO_MODE ? "demo" : useModel} theme=${theme.id} people=${peopleCount} id=${id} ${((Date.now() - started) / 1000).toFixed(1)}s`);
+    res.json({ id, model: DEMO_MODE ? null : useModel, imageUrl: `/photos/${id}.jpg`, shareUrl, qr, seconds: Math.round((Date.now() - started) / 1000) });
   } catch (err) {
     console.error("[generate] failed:", err.message);
     res.status(500).json({ error: friendlyError(err), detail: String(err.message).slice(0, 500) });
@@ -108,7 +117,7 @@ p{color:#6d6a6c;font-size:14px}</style></head><body>
 });
 
 // ---------- AI call ----------
-async function callOpenRouter(imageDataUrl, prompt) {
+async function callOpenRouter(imageDataUrl, prompt, model = OPENROUTER_MODEL) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 170_000);
   try {
@@ -121,7 +130,7 @@ async function callOpenRouter(imageDataUrl, prompt) {
         "X-Title": "Cetak Cetak AI Booth",
       },
       body: JSON.stringify({
-        model: OPENROUTER_MODEL,
+        model,
         modalities: ["image", "text"],
         image_config: { aspect_ratio: "2:3" },
         messages: [
