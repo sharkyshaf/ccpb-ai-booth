@@ -16,6 +16,7 @@
 - `public/index.html` – booth UI: start → theme → people (1–4) → camera + 3-2-1 → loading → result + QR → idle auto-reset. Brand: bg #E7E6E7, Crimson Pro + DM Sans, light/luxury/minimal (never super-dark).
 - `themes.json` – 3 looks: Lady – Glam Gown, Baju Melayu Raya, Corporate Headshot.
 - `BASE_RULES` in server.js: keep faces identical, keep hijab on + modest clothing, same number of people, no text.
+- Decision (16 Nov 2026): modest-clothing rule applies ONLY to hijab wearers, not everyone. Don't change without asking Shaf.
 - Tested: demo mode end to end, simulated OpenRouter response, frame overlay, download page. **NOT yet tested against the real OpenRouter API** (no key yet).
 - Env vars: `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `PUBLIC_URL`, `DATA_DIR`, `OPENROUTER_BASE_URL` (testing only), `PORT`.
 
