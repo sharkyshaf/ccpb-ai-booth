@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(PHOTO_DIR, { maxAge: "7d" }));
 
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, version: 3, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
+  res.json({ ok: true, version: 4, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
 });
 
 app.get("/api/themes", (req, res) => {
@@ -148,6 +148,8 @@ async function callOpenRouter(imageDataUrl, prompt) {
       const text = choice?.message?.content;
       const why = [
         `finish=${choice?.finish_reason ?? choice?.native_finish_reason ?? "?"}`,
+        choice?.error ? `error=${JSON.stringify(choice.error).slice(0, 300)}` : "",
+        data?.provider ? `provider=${data.provider}` : "",
         choice?.message?.refusal ? `refusal=${String(choice.message.refusal).slice(0, 200)}` : "",
         typeof text === "string" && text ? `text=${text.slice(0, 300)}` : "",
         !choice ? `raw=${JSON.stringify(data).slice(0, 300)}` : "",
