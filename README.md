@@ -28,7 +28,7 @@ Guest phone ──scans QR──▶ /p/<id> download page
 | Variable | Example | Notes |
 |---|---|---|
 | `OPENROUTER_API_KEY` | `sk-or-...` | From openrouter.ai → Keys. Never share it. |
-| `OPENROUTER_MODEL` | `openai/gpt-5-image` | Default is ChatGPT's image model. Try `google/gemini-2.5-flash-image` to compare. Check the exact model name on openrouter.ai/models. |
+| `OPENROUTER_MODEL` | `openai/gpt-5.4-image-2` | Default is ChatGPT's image model (`openai/gpt-5-image` no longer works – OpenAI retired its engine). Try `google/gemini-2.5-flash-image` to compare. Check the exact model name on openrouter.ai/models. |
 | `PUBLIC_URL` | `https://ccpb-booth.up.railway.app` | Your Railway web address, so QR codes point to the right place. |
 | `DATA_DIR` | `/data` | Only if you add a Railway Volume (see step 5). |
 
