@@ -16,7 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || ""; // empty = DEMO MODE
 const OPENROUTER_BASE_URL = (process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1").replace(/\/$/, "");
-const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-5.4-image-2";
+const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "google/gemini-3.1-flash-image";
 // Models a request may pick for side-by-side testing (booth screen always uses the default).
 const ALLOWED_MODELS = [
   "openai/gpt-5.4-image-2",
@@ -53,7 +53,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(PHOTO_DIR, { maxAge: "7d" }));
 
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, version: 7, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
+  res.json({ ok: true, version: 8, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
 });
 
 app.get("/api/themes", (req, res) => {

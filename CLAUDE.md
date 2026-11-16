@@ -8,7 +8,7 @@
 ## Why this app exists (decisions already made)
 - LumaBooth for Android has NO AI Portraits (only Windows/Apple). Roam does not pass touch to a PC over USB-C/HDMI (tested with a laptop whose USB-C is data-only; result inconclusive but mini-PC route abandoned).
 - Chosen route: **web app in Chrome on the Roam** (touch + Roam camera work natively) + small Node server + **OpenRouter** for the image model.
-- Shaf chose **ChatGPT's image model** via OpenRouter (default `openai/gpt-5.4-image-2`; `openai/gpt-5-image` broke in Nov 2026 – OpenAI retired gpt-image-1). Can compare with `google/gemini-2.5-flash-image`.
+- Model: Shaf first chose ChatGPT's image model, then after a side-by-side test (16 Nov 2026, 3 hijab women, Glam Gown) switched default to **`google/gemini-3.1-flash-image`** (9s). Gemini 3 Pro: 20s; `openai/gpt-5.4-image-2`: 81s but best likeness/poses. `openai/gpt-5-image` is dead (OpenAI retired gpt-image-1). Test requests can pass `model` (allowlist `ALLOWED_MODELS` in server.js); booth UI uses the default.
 - Inspiration: Derek Cheung "I Built an AI Photobooth with OpenRouter + Claude Code" (YouTube). We skip his voice/video/TTS extras for v1.
 
 ## Current state (v1, built 16 Nov 2026)
@@ -16,6 +16,7 @@
 - `public/index.html` – booth UI: start → theme → people (1–4) → camera + 3-2-1 → loading → result + QR → idle auto-reset. Brand: bg #E7E6E7, Crimson Pro + DM Sans, light/luxury/minimal (never super-dark).
 - `themes.json` – 3 looks: Lady – Glam Gown, Baju Melayu Raya, Corporate Headshot.
 - `BASE_RULES` in server.js: keep faces identical, keep hijab on + modest clothing, same number of people, no text.
+- Hijab colour/fabric is restyled to match the theme outfit (same wrap style, hair always covered). No extra people in background.
 - Decision (16 Nov 2026): modest-clothing rule applies ONLY to hijab wearers, not everyone. Don't change without asking Shaf.
 - Tested: demo mode end to end, simulated OpenRouter response, frame overlay, download page. **NOT yet tested against the real OpenRouter API** (no key yet).
 - Env vars: `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `PUBLIC_URL`, `DATA_DIR`, `OPENROUTER_BASE_URL` (testing only), `PORT`.

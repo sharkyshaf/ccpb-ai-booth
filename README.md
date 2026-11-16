@@ -7,7 +7,7 @@ Guest picks a look → picks number of people → 3-2-1 photo → AI restyles it
 
 ```
 Roam (Chrome, fullscreen)          Your server (Railway)              OpenRouter
-  booth screen  ──photo──▶  server.js ──photo + theme prompt──▶  ChatGPT image model
+  booth screen  ──photo──▶  server.js ──photo + theme prompt──▶  AI image model (Gemini)
                 ◀──result + QR──      ◀──────── AI image ─────────
 Guest phone ──scans QR──▶ /p/<id> download page
 ```
@@ -28,7 +28,7 @@ Guest phone ──scans QR──▶ /p/<id> download page
 | Variable | Example | Notes |
 |---|---|---|
 | `OPENROUTER_API_KEY` | `sk-or-...` | From openrouter.ai → Keys. Never share it. |
-| `OPENROUTER_MODEL` | `openai/gpt-5.4-image-2` | Default is ChatGPT's image model (`openai/gpt-5-image` no longer works – OpenAI retired its engine). Try `google/gemini-2.5-flash-image` to compare. Check the exact model name on openrouter.ai/models. |
+| `OPENROUTER_MODEL` | `google/gemini-3.1-flash-image` | Default (fastest, ~9s). Alternatives: `google/gemini-3-pro-image` (~20s), `openai/gpt-5.4-image-2` (best likeness, ~80s). `openai/gpt-5-image` no longer works. Check the exact model name on openrouter.ai/models. |
 | `PUBLIC_URL` | `https://ccpb-booth.up.railway.app` | Your Railway web address, so QR codes point to the right place. |
 | `DATA_DIR` | `/data` | Only if you add a Railway Volume (see step 5). |
 
