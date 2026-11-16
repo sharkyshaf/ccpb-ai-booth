@@ -39,6 +39,7 @@ function loadThemes() {
 }
 
 const app = express();
+app.set("trust proxy", true); // Railway sits in front of us; use its https address in QR links
 app.use(express.json({ limit: "15mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(PHOTO_DIR, { maxAge: "7d" }));
