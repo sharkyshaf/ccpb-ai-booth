@@ -8,7 +8,7 @@
 ## Why this app exists (decisions already made)
 - LumaBooth for Android has NO AI Portraits (only Windows/Apple). Roam does not pass touch to a PC over USB-C/HDMI (tested with a laptop whose USB-C is data-only; result inconclusive but mini-PC route abandoned).
 - Chosen route: **web app in Chrome on the Roam** (touch + Roam camera work natively) + small Node server + **OpenRouter** for the image model.
-- Shaf chose **ChatGPT's image model** via OpenRouter (default `openai/gpt-5-image` – verify exact ID on openrouter.ai/models). Can compare with `google/gemini-2.5-flash-image`.
+- Shaf chose **ChatGPT's image model** via OpenRouter (default `openai/gpt-5.4-image-2`; `openai/gpt-5-image` broke in Nov 2026 – OpenAI retired gpt-image-1). Can compare with `google/gemini-2.5-flash-image`.
 - Inspiration: Derek Cheung "I Built an AI Photobooth with OpenRouter + Claude Code" (YouTube). We skip his voice/video/TTS extras for v1.
 
 ## Current state (v1, built 16 Nov 2026)
