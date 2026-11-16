@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/photos", express.static(PHOTO_DIR, { maxAge: "7d" }));
 
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
+  res.json({ ok: true, version: 3, demoMode: DEMO_MODE, model: DEMO_MODE ? null : OPENROUTER_MODEL });
 });
 
 app.get("/api/themes", (req, res) => {
