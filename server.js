@@ -85,7 +85,7 @@ app.post("/api/generate", async (req, res) => {
     res.json({ id, imageUrl: `/photos/${id}.jpg`, shareUrl, qr, seconds: Math.round((Date.now() - started) / 1000) });
   } catch (err) {
     console.error("[generate] failed:", err.message);
-    res.status(500).json({ error: friendlyError(err) });
+    res.status(500).json({ error: friendlyError(err), detail: String(err.message).slice(0, 500) });
   }
 });
 
@@ -144,8 +144,15 @@ async function callOpenRouter(imageDataUrl, prompt) {
     }
     const url = extractImageUrl(data);
     if (!url) {
-      const text = data?.choices?.[0]?.message?.content;
-      throw new Error(`Model returned no image${typeof text === "string" && text ? `: ${text.slice(0, 200)}` : ""}`);
+      const choice = data?.choices?.[0];
+      const text = choice?.message?.content;
+      const why = [
+        `finish=${choice?.finish_reason ?? choice?.native_finish_reason ?? "?"}`,
+        choice?.message?.refusal ? `refusal=${String(choice.message.refusal).slice(0, 200)}` : "",
+        typeof text === "string" && text ? `text=${text.slice(0, 300)}` : "",
+        !choice ? `raw=${JSON.stringify(data).slice(0, 300)}` : "",
+      ].filter(Boolean).join(" | ");
+      throw new Error(`Model returned no image: ${why}`);
     }
     return await urlToBuffer(url);
   } finally {
